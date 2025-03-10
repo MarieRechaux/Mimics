@@ -1,0 +1,6 @@
+        <footer class="footer">
+            <p>&copy; 2025</p>
+        </footer>
+    </div>
+</body>
+</html>
