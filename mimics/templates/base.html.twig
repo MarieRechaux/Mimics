@@ -127,6 +127,13 @@
                   <a class="nav-link" href="{{ path('app_logout') }}">Déconnexion</a>
                 </li>
                 {% endif %}
+
+                {# Si l'utilisateur a un rôle garanti ROLE_ADMIN, on lui donne accès au lien vers le backOffice #}
+                {% if  is_granted('ROLE_ADMIN') %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ path('app_logout') }}">BackOffice</a>
+                </li>
+                {% endif %}
               </ul>
             </div>
           </nav>
