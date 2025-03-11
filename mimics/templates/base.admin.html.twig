@@ -32,6 +32,10 @@
 </style>
 
 <body>
+    {# déclaration de variable TWIG, retourne la route sur laquelle nous nous trouvons #}
+    {% set currentPath = app.request.attributes.get('_route') %}
+    {# {{ dump(currentPath) }} #}
+
   <div id="app">
     <nav id="navbar-main" class="navbar is-fixed-top">
       <div class="navbar-brand">
@@ -89,8 +93,13 @@
         <p class="menu-label">General</p>
         <ul class="menu-list">
           <li>
-            <a href="{{ path('app_admin')}}" class="has-icon">
-              <span class="icon"><i class="mdi mdi-desktop-mac"></i></span>
+            <a href="{{ path('app_admin')}}" class="{% if currentPath is same as 'app_admin' %}is-active{% endif %} has-icon">
+
+              <span class="icon {% if currentPath is same as 'app_admin' %}has-update-mark{% endif %}">
+                
+                <i class="mdi mdi-desktop-mac"></i>
+
+                </span>
               <span class="menu-item-label">Dashboard</span>
             </a>
           </li>
@@ -98,15 +107,23 @@
         <p class="menu-label">MENU</p>
         <ul class="menu-list">
           <li>
-            <a href="{{ path('app_admin_category')}}" class="is-active has-icon">
-              <span class="icon has-update-mark"><span class="mdi mdi-store"></span>
+            <a href="{{ path('app_admin_category')}}" class="{% if currentPath is same as 'app_admin_category' %}is-active{% endif %} has-icon">
+
+              <span class="icon {% if currentPath is same as 'app_admin_category' %}has-update-mark{% endif %}">
+              
+                <span class="mdi mdi-store"></span>
+
               </span>
               <span class="menu-item-label">Catégorie produit</span>
             </a>
           </li>
           <li>
-            <a href="{{ path('app_admin_products')}}" class="is-active has-icon">
-              <span class="icon has-update-mark"><span class="mdi mdi-store"></span>
+            <a href="{{ path('app_admin_products')}}" class="{% if currentPath is same as 'app_admin_products' %}is-active{% endif %} has-icon">
+
+              <span class="icon {% if currentPath is same as 'app_admin_products' %}has-update-mark{% endif %}">
+              
+              <span class="mdi mdi-store"></span>
+
               </span>
               <span class="menu-item-label">Boutique</span>
             </a>
