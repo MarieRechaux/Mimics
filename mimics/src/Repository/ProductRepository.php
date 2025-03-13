@@ -16,12 +16,26 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    
+       /**
+        * @return Product[] Returns an array of Product objects
+        */
+       public function getMaxProduct(): array
+       {
+           return $this->createQueryBuilder('p') // p = product
+               ->orderBy('p.title', 'ASC')
+               ->setMaxResults(6) // LIMIT 6
+               ->getQuery() // STMT + FETCH
+               ->getResult()
+           ;
+       }
+
     //    /**
     //     * @return Product[] Returns an array of Product objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('p')
+    //        return $this->createQueryBuilder('p') 
     //            ->andWhere('p.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->orderBy('p.id', 'ASC')

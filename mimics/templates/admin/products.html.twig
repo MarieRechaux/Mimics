@@ -5,15 +5,11 @@
 {% endblock %}
 
 {% block body %}
-    <style>
-        .modal-backdrop {
-            z-index: 1 !important;
-        }
-
-        .modal {
-            margin-top: 200px;
-        }
-    </style>
+	<style>
+		.modal-backdrop {
+			z-index: 1 !important;
+		}
+	</style>
 
 	<div
 		class="container mb-4">
@@ -39,7 +35,7 @@
 						<th>Photo</th>
 						<th>Référence</th>
 						<th>Titre</th>
-						<th>description</th>
+						<th>Description</th>
 						<th>Catégorie</th>
 						<th>Mémoire</th>
 						<th>Couleur</th>
@@ -55,7 +51,7 @@
 							<td><img src="{{ asset('uploads/images/' ~ item.picture) }}" alt="{{ item.title }}" class="picture__product"></td>
 							<td>{{ item.reference }}</td>
 							<td>{{ item.title }}</td>
-							<td>{{ item.description|slice(0, 20) }} [...]</td>
+							<td>{{ item.description|slice(0, 20) }}[...]</td>
 							<td>{{ item.category.title }}</td>
 							<td>{{ item.size }}</td>
 							<td>{{ item.color }}</td>
@@ -71,26 +67,28 @@
 								</button>
 							</td>
 						</tr>
-                        <!-- Modal -->
-                        <div class="modal fade" id="product-{{ item.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmation suppression</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                Voulez-vous réellement supprimer le produit
-                                <strong> {{ item.title }} </strong> ?
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Annuler</button>
 
-                                <a href="" class="btn btn-danger mb-2" type="button" class="btn btn-primary">Confirmer</a>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
+						<div class="modal fade" id="product-{{ item.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h1 class="modal-title fs-5" id="exampleModalLabel">Confirmation suppression</h1>
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										Voulez-vous réellement supprimer l'article
+										<strong>{{ item.title }}</strong>
+										?
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+
+										<a href="{{ path('app_admin_products_remove', {'id': item.id}) }}" class="btn btn-primary">Confirmer</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
 					{% endfor %}
 				</tbody>
 			</table>
@@ -112,11 +110,11 @@
 			{{ form_row(productForm.price) }}
 			{{ form_row(productForm.picture) }}
 
-            <div class="col-12 col-sm-6 col-md-2 col-lg-2 my-4">
-            {% if pictureFile is not null %}
-                <img src="{{ asset('uploads/images/' ~ pictureFile) }}" class="w-100" alt="picture product"> 
-            {% endif %}
-            </div>
+			<div class="col-12 col-sm-6 col-md-2 col-lg-2 my-4">
+				{% if pictureFile is not null %}
+					<img src="{{ asset('uploads/images/' ~ pictureFile) }}" class="w-100" alt="picture product">
+				{% endif %}
+			</div>
 
 			<button type="submit" class="btn btn-dark">Enregistrer</button>
 			{{ form_end(productForm) }}

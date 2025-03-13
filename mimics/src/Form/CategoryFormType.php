@@ -20,7 +20,7 @@ class CategoryFormType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new NotBlank([
-                        'message' => "veillez saisir un titre de catégorie"
+                        'message' => "Veuillez saisir un titre de catégorie"
                     ])
                 ]
             ])
@@ -29,7 +29,7 @@ class CategoryFormType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new NotBlank([
-                        'message' => "veillez saisir une description"
+                        'message' => "Veuillez saisir une description"
                     ])
                 ],
                 'attr' => [

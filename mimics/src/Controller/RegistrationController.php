@@ -16,7 +16,12 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
-
+        //   $_SESSION['user']
+        /*
+        public function getUser(){
+            return $_SESSION['user'];
+        }
+        */
         if ($this->getUser()) {
             return $this->redirectToRoute('app_home');
         }
@@ -24,30 +29,30 @@ class RegistrationController extends AbstractController
         $user = new User();
         // dump($user);
 
-        // $user->setEmail($_POST['email'])
         $form = $this->createForm(RegistrationFormType::class, $user);
 
+        // $user->setEmail($_POST['email'])
+        // $user->setFirstName($_POST['firstName'])
         $form->handleRequest($request);
 
-        // if($_SERVEUR['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])){}
+        // if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {}
         if ($form->isSubmitted() && $form->isValid()) {
 
+            //                      $_POST['password']
             $plainPassword = $form->get('password')->getData();
             $passwordHash = $userPasswordHasher->hashPassword($user, $plainPassword);
             $user->setPassword($passwordHash);
 
+            //              prepare("INSERT INTO user VALUES ($user->getFirstName())")
             $entityManager->persist($user);
-                       // ->execute()
+            //            ->execute()
             $entityManager->flush();
 
             dump($passwordHash);
             dump($user);
-            
+
             return $this->redirectToRoute('app_login');
-
         }
-
-        dump($request);
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form

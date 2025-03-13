@@ -26,10 +26,9 @@ class RegistrationFormType extends AbstractType
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Merci de renseigner votre adresse Email',
-                    ]),
+                    ])
                 ],
-            ] )
-
+            ])
             ->add('agreeTerms', CheckboxType::class, [
                 'label' => "J'accepte les conditions générales",
                 'required' => false,
@@ -40,25 +39,20 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
-
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'invalid_message' => "Les mots de passe ne correspondent pas",
                 'required' => false,
                 'first_options' => ['label' => "Mot de passe"],
-                'second_options' => ['label' => "Confirmez votre mot de passe"],
-                'attr' => ['autocomplete' => 'new-password'],
-                // instead of being set onto the object directly,
-                // this is read and encoded in the controller
+                'second_options' => ['label' => "Confimez votre mot de passe"],
                 'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Please enter a password',
+                        'message' => 'Veuillez renseigner votre mot de passe',
                     ]),
                     new Length([
                         'min' => 8,
                         'minMessage' => 'Votre mot de passe doit contenir au minimum 8 caractères',
-                        // max length allowed by Symfony for security reasons
                         'max' => 4096,
                     ]),
                     new Regex([
@@ -69,35 +63,35 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
             ->add('firstName', TextType::class, [
-                'required' => false,
                 'label' => "Prénom",
+                'required' => false,
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Merci de renseigner votre prénom',
-                    ]),
+                    ])
                 ],
-            ] )
+            ])
             ->add('lastName', TextType::class, [
+                'label' => "Nom",
                 'required' => false,
-                'label' => "Nom de famille",
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Merci de renseigner votre nom',
-                    ]),
+                    ])
                 ],
-            ] )
+            ])
             ->add('city', TextType::class, [
-                'required' => false,
                 'label' => "Ville",
+                'required' => false,
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Merci de renseigner votre ville',
-                    ]),
+                    ])
                 ],
-            ] )
+            ])
             ->add('phone', TextType::class, [
+                'label' => "Téléphone",
                 'required' => false,
-                'label' => "Numéro de téléphone",
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Merci de renseigner votre numéro de téléphone',
@@ -105,29 +99,28 @@ class RegistrationFormType extends AbstractType
                     new Length([
                         'min' => 10,
                         'minMessage' => 'Le numéro de téléphone saisie n\'est pas au bon format',
-                        // max length allowed by Symfony for security reasons
                         'max' => 10,
-                    ]),
+                    ])
                 ],
-            ] )
+            ])
             ->add('zipcode', TextType::class, [
-                'required' => false,
                 'label' => "Code postal",
+                'required' => false,
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Merci de renseigner votre code postal',
-                    ]),
+                    ])
                 ],
-            ] )
+            ])
             ->add('address', TextType::class, [
-                'required' => false,
                 'label' => "Adresse",
+                'required' => false,
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Merci de renseigner votre adress',
-                    ]),
+                        'message' => 'Merci de renseigner votre adresse',
+                    ])
                 ],
-            ] )
+            ])
         ;
     }
 

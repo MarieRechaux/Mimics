@@ -4,11 +4,14 @@
 
 {% block body %}
     <div class="container mb-4">
-        <h1 class="text-center my-4">Créez votre compte</h1>
+        <h1 class="text-center my-4">Créer votre compte</h1>
 
+        {# <form action="" method="post"> #}
         {{ form_start(registrationForm) }}
 
             {{ form_row(registrationForm.firstName) }}
+            {# <input type="text" name="firstName"> #}
+
             {{ form_row(registrationForm.lastName) }}
             {{ form_row(registrationForm.email) }}
             {{ form_row(registrationForm.phone) }}
@@ -20,6 +23,6 @@
             <button type="submit" class="btn btn-dark">Continuer</button>
 
         {{ form_end(registrationForm) }}
+        {# </form> #}
     </div>
-
 {% endblock %}

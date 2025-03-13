@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -36,17 +38,28 @@ class Product
     private ?string $picture = null;
 
     #[ORM\Column]
-    private ?float $price = null;
-
-    #[ORM\Column]
     private ?int $stock = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column]
+    private ?float $price = null;
+
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
+
+    /**
+     * @var Collection<int, OrderDetails>
+     */
+    #[ORM\OneToMany(targetEntity: OrderDetails::class, mappedBy: 'product', orphanRemoval: true)]
+    private Collection $orderDetails;
+
+    public function __construct()
+    {
+        $this->orderDetails = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -137,18 +150,6 @@ class Product
         return $this;
     }
 
-    public function getPrice(): ?float
-    {
-        return $this->price;
-    }
-
-    public function setPrice(float $price): static
-    {
-        $this->price = $price;
-
-        return $this;
-    }
-
     public function getStock(): ?int
     {
         return $this->stock;
@@ -173,6 +174,18 @@ class Product
         return $this;
     }
 
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): static
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
     public function getCategory(): ?Category
     {
         return $this->category;
@@ -181,6 +194,36 @@ class Product
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OrderDetails>
+     */
+    public function getOrderDetails(): Collection
+    {
+        return $this->orderDetails;
+    }
+
+    public function addOrderDetail(OrderDetails $orderDetail): static
+    {
+        if (!$this->orderDetails->contains($orderDetail)) {
+            $this->orderDetails->add($orderDetail);
+            $orderDetail->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrderDetail(OrderDetails $orderDetail): static
+    {
+        if ($this->orderDetails->removeElement($orderDetail)) {
+            // set the owning side to null (unless already changed)
+            if ($orderDetail->getProduct() === $this) {
+                $orderDetail->setProduct(null);
+            }
+        }
 
         return $this;
     }

@@ -1,0 +1,130 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Minics | Votre panier
+{% endblock %}
+
+{% block body %}
+	<div class="container my-5">
+
+		{% for label, messages in app.flashes(['success', 'danger', 'warning']) %}
+			{% for message in messages %}
+				<div class="bg-{{ label }} text-white p-3 mb-3">
+					{{ message|raw }}
+				</div>
+			{% endfor %}
+		{% endfor %}
+
+		<table class="table table-borderless">
+			<thead>
+				<tr>
+					<th>Photo</th>
+					<th>Titre</th>
+					<th>Référence</th>
+					<th>Catégorie</th>
+					<th>Quantité</th>
+					<th>Prix unitaire</th>
+					<th>Prix total</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% if dataCart is empty %}
+					<tr>
+						<td colspan="7" class="text-center">Aucun article dans le panier</td>
+					</tr>
+				{% else %}
+					{% for item in dataCart %}
+						{# {{ dump(item) }} #}
+
+						<tr>
+							<td><img src="{{ asset('uploads/images/' ~ item.product.picture) }}" alt="{{ item.product.title }}" class="product__picture"></td>
+							<td>{{ item.product.title }}</td>
+							<td>{{ item.product.reference }}</td>
+							<td>{{ item.product.category.title }}</td>
+							<td>{{ item.quantity }}</td>
+							<td>
+								<strong>{{ item.product.price }}€</strong>
+							</td>
+							<td>
+								<strong>{{ item.quantity * item.product.price }}€</strong>
+							</td>
+							<td>
+								<button type="button" class="btn btn-dark" data-toggle="modal" data-target="#cart-modal-remove-{{ item.product.id }}">
+									<i class="fa-solid fa-trash"></i>
+								</button>
+							</td>
+						</tr>
+
+						<!-- Modal -->
+						<div class="modal fade" id="cart-modal-remove-{{ item.product.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="exampleModalLabel">Confirmer la suppression</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										Voulez-vous réellement retirer l'article
+										<strong>{{ item.product.title }}</strong>
+										du panier ?
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+										<a href="{{ path('app_cart_remove', {'id': item.product.id}) }}" class="btn btn-primary">Supprimer</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					{% endfor %}
+					<tr>
+						<th>MONTANT TOTAL</th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th>{{ total }}€</th>
+						<th></th>
+					</tr>
+				{% endif %}
+			</tbody>
+		</table>
+
+		{% if dataCart is not empty %}
+			{% if app.user %}
+				<a href="{{ path('app_cart_payment') }}" class="btn btn-dark mr-2">VALIDER LE PAIEMENT</a>
+
+				<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#cart-modal-delete">VIDER LE PANIER</button>
+
+				<!-- Modal -->
+				<div class="modal fade" id="cart-modal-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Confirmer la suppression</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								Voulez-vous réellement supprimer tous les articles du panier ?
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+								<a href="{{ path('app_cart_delete') }}" class="btn btn-primary">Supprimer</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+			{% else %}
+				<a href="" class="btn btn-dark">IDENTIFIEZ-VOUS</a>
+			{% endif %}
+		{% endif %}
+	</div>
+{% endblock %}

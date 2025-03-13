@@ -2,18 +2,18 @@
 
 namespace App\Form;
 
-use App\Entity\Product;
 use App\Entity\Category;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
+use App\Entity\Product;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ProductFormType extends AbstractType
 {
@@ -25,7 +25,7 @@ class ProductFormType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new NotBlank([
-                        'message' => "veuillez saisir une référence"
+                        'message' => "Veuillez saisir une référence"
                     ])
                 ]
             ])
@@ -34,21 +34,21 @@ class ProductFormType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new NotBlank([
-                        'message' => "veuillez saisir un titre"
+                        'message' => "Veuillez saisir un titre"
                     ])
                 ]
             ])
             ->add('description', TextareaType::class, [
-                'label' => "description",
+                'label' => "Description",
                 'required' => false,
                 'constraints' => [
                     new NotBlank([
-                        'message' => "veuillez saisir une description"
+                        'message' => "Veuillez saisir une description"
                     ])
-                    ],
-                    'attr' => [
-                        'rows' => 10
-                    ]
+                ],
+                'attr' => [
+                    'rows' => 10
+                ]
             ])
             ->add('color', ChoiceType::class, [
                 'label' => "Couleur",
@@ -56,8 +56,8 @@ class ProductFormType extends AbstractType
                     'Blanc' => 'blanc',
                     'Noir' => 'noir',
                     'Gris sidéral' => 'gris sidéral',
-                    'Bleu' => 'bleu',
-                    'Rose' => 'rose'
+                    'Bleu' => "bleu",
+                    'Rose' => "rose"
                 ]
             ])
             ->add('size', ChoiceType::class, [
@@ -97,7 +97,7 @@ class ProductFormType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new NotBlank([
-                        'message' => "veuillez saisir un stock"
+                        'message' => "Veuillez saisir un stock"
                     ])
                 ]
             ])
@@ -106,7 +106,7 @@ class ProductFormType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new NotBlank([
-                        'message' => "veuillez saisir une prix"
+                        'message' => "Veuillez saisir un prix"
                     ])
                 ]
             ])
@@ -116,7 +116,7 @@ class ProductFormType extends AbstractType
             ])
             /*
                 ->add('category') correspond à la clé étrangère SQL category
-                Ici c'est un champs qui provirent d'une autre table SQL donc un camps EntityType, cela va génére dans le formulaire, une liste déroulante avec toute les catégorie et les titres des catégorie dans les options du selecteur
+                Ici c'est un champs qui provient d'une autre table SQL donc un champ EntityType, cela va générer dans le formulaire, une liste déroulante avec toute les catégories et les titres des catégories dans les options du selecteur
             */
         ;
     }

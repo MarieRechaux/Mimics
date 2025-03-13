@@ -2,40 +2,41 @@
 
 namespace App\Controller;
 
-use PDO;
-use App\Entity\Product;
 use App\Entity\Category;
-use App\Form\ProductFormType;
+use App\Entity\Product;
 use App\Form\CategoryFormType;
-use Doctrine\ORM\EntityManager;
-use App\Repository\ProductRepository;
+use App\Form\ProductFormType;
 use App\Repository\CategoryRepository;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 final class AdminController extends AbstractController
 {
     #[Route('/admin', name: 'app_admin')]
     public function admin(): Response
     {
-        return $this->render('admin/index.html.twig', [
-        ]);
+        return $this->render('admin/index.html.twig', []);
     }
 
     #[Route('/admin/products', name: 'app_admin_products')]
     #[Route('/admin/products/update/{id}', name: 'app_admin_products_update')]
-    public function adminProducts(?Product $product, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, ProductRepository $repoProduct): Response
+    public function adminProducts(?Product $product, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
-
-        // ?Product $product : le ? veut dire que par défault $produit a une valeur null
-
+        // ?Product $product : le ? veut dire que par défault $product a une valeur null
         // dump($product);
-        if(!$product)
+
+        // 1er route '/admin/products'
+        // Si la variable $product N'EST PAS (!), si elle renvoie false, cela veut dire qu'aucun id product n'est passé dans l'URL, alors on entre dans la condition, et on initialise un objet Entity $product, donc c'est une insertion de produit 
+
+        // 2ème route : '/admin/products/update/{id}'
+        // On envoi un id $product dans l'URL, Symfony comprend que l'on a besoin d'un objet entity product issu de la table SQL product, il est capable automatiquement d'aller sélectionner en BDD le produit et de l'envoyer en arguement de la fonction ?Product $product, à ce moment là, la variable $product contient les données du produit que l'on souhaite modifié, alors on ne rentre pas dans la condition pas dans la condition if
+        if (!$product)
             $product = new Product;
 
         $form = $this->createForm(ProductFormType::class, $product);
@@ -47,17 +48,16 @@ final class AdminController extends AbstractController
             // dump($pictureFile);
 
             if ($pictureFile) {
-                // retourne le nom du fichier d'origine (sans l'extension)
-
+                // retoutrne le nom du fichier d'origine  (sans l'extension)
                 $originalFileName = pathinfo($pictureFile->getClientOriginalName(), PATHINFO_FILENAME);
                 // dump($originalFileName);
 
-                // slug() sécurise le nom du fichier (suppression espace etc...)
+                // slug() sécurise le nom du fichier  (suppression espace etc...)
                 $safeFileName = $slugger->slug($originalFileName);
                 // dump($safeFileName);
 
-                // on renome l'image 
-                //                    p2-4457842511.png
+                // On renomme l'image
+                //                  p2-4457842511.png
                 $newFileName = $safeFileName . '-' . uniqid() . '.' . $pictureFile->guessExtension();
                 // dump($newFileName);
                 // dump($this->getParameter('image_directory'));
@@ -66,27 +66,29 @@ final class AdminController extends AbstractController
                 try {
                     $pictureFile->move($currentPath, $newFileName);
                 } catch (FileException $e) {
-                    dump($e);
+                    // dump($e->getMessage());
                 }
+
                 $product->setPicture($newFileName);
-                dump($product);
+                // dump($product);
             }
+
+            // Si la condition retourne TRUE, cela veut dire que l'id est connu en BDD, c'est une modification
+            if ($product->getId()) {
+                $messageValidate = "Les modifications ont été enregistrées.";
+            } else {
+                // Sinon dans tout les autres cas, c'est une insertion
+                $messageValidate = "L'article été enregistré.";
+            }
+
             $product->setCreatedAt(new \DateTimeImmutable());
             $entityManager->persist($product);
             $entityManager->flush();
 
-            $this->addFlash('success', "L'article a été enregistré.");
+            $this->addFlash('success', $messageValidate);
 
             return $this->redirectToRoute('app_admin_products');
         }
-
-        /*
-            Exo :
-            1. sélectionner tout les produits enregistrés dans la BDD (répository)
-            2. transmettre les données délectionnées au template
-            3. afficher les données sous forme de tableau HTML dans le template 'admin/product.html.twig' (boucle {% for in %})
-            4. prévoir pour chaque produit, deux liens modification / suppression 
-        */
 
         // $repoProduct : objet issu de la class ProductRepository
         $repoProduct = $entityManager->getRepository(Product::class);
@@ -100,18 +102,21 @@ final class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/orders', name: 'app_admin_orders')]
-    public function adminOrders(): Response
+    #[Route('/admin/products/remove/{id}', name: 'app_admin_products_remove')]
+    public function adminRemoveProduct($id, ProductRepository $repoProduct, EntityManagerInterface $entityManager)
     {
-        return $this->render('admin/orders.html.twig', [
-        ]);
-    }
+        // SELECT * FROM product WHERE id = $id
+        $product = $repoProduct->find($id);
+        // dump($product);
 
-    #[Route('/admin/users', name: 'app_admin_users')]
-    public function adminUsers(): Response
-    {
-        return $this->render('admin/users.html.twig', [
-        ]);
+        // DELETE FROM product WHERE id = 9
+        $entityManager->remove($product);
+        // execute();
+        $entityManager->flush();
+
+        $this->addFlash('success', "L'article a été supprimé.");
+
+        return $this->redirectToRoute('app_admin_products');
     }
 
     #[Route('/admin/category', name: 'app_admin_category')]
@@ -121,31 +126,38 @@ final class AdminController extends AbstractController
 
         $form = $this->createForm(CategoryFormType::class, $category);
 
+        // $category->setTitle($_POST['title']);
+        // $category->setTitle($_POST['descritpion']);
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()){
+        // if(isset($_POST['submit']) && $_SERVER['REQUEST_METHOD'] === 'POST')
+        if ($form->isSubmitted() && $form->isValid()) {
 
             $category->setCreatedAt(new \DateTimeImmutable());
 
-            // $connect_db->prepare("INSERT INTO category VALUES (:title)")
-            // $connect_db->bindValue(':title', $category->getTitle(), PDO::PARAM_STR)
+            // $stmt->prepare("INSERT INTO category VALUES (:title)")
+            // $stmt->bindValue(':title', $category->getTitle(), PDO::PARAM_STR);
             $entityManager->persist($category);
 
-            // $stmt->execute
+            // $stmt->execute();
             $entityManager->flush();
 
             // Message utilisateur stockés en session
-            $this->addFlash('success', 'La categorie a été enregistrée.');
+            // $_SESSION['msgValidate'] = "La catégorie a été enregistrée."
+            // $_SESSION['success'] = "La catégorie a été enregistrée."
+            $this->addFlash('success', "La catégorie a été enregistrée.");
 
             return $this->redirectToRoute('app_admin_category');
         }
 
         /*
-            Une classe Repository contient des méthodes permettant uniquement d'executer des reuêtes de sélections (SELECT) EN BDD (find($id), findAll(), findBy(), findOneBy())
-        */
+            $data = $connect_db->query("SELECT * FROM category");
+            $dbCategory = $data->fetchAll(PDO::FETCH_ASSOC);
 
+            Un classe Repository contient des méthodes permettant uniquement d'executer des requêtes de sélections (SELECT) en BDD  (find($id), findAll(), findBy(), findOneBy())
+        */
         $dbCategory = $repoCategory->findAll();
-        // dump($dbCategory);
+        dump($dbCategory);
 
         return $this->render('admin/category.html.twig', [
             'categoryForm' => $form,
@@ -153,12 +165,13 @@ final class AdminController extends AbstractController
         ]);
     }
 
+    //                              1
     #[Route('/admin/category/update/{id}', name: 'app_admin_category_update')]
-    public function adminCategoryUpdate($id, Category $category, Request $request, EntityManagerInterface $entityManager, CategoryRepository $repoCategory): response
+    public function adminCategoryUpdate($id, Category $category, Request $request, EntityManagerInterface $entityManager, CategoryRepository $repoCategory): Response
     {
         // dump($category);
 
-        // SELECT * FROM category WHERE id = $id;
+        // SELECT * FROM category WHERE id = $id; // 1
         // + fetch(PDO::FETCH_ASSOC)
         $category = $repoCategory->find($id);
         // dump($id);
@@ -166,6 +179,7 @@ final class AdminController extends AbstractController
 
         $form = $this->createForm(CategoryFormType::class, $category);
 
+        // $category->setTitle($_POST['title'])
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -174,10 +188,10 @@ final class AdminController extends AbstractController
             $entityManager->persist($category);
             $entityManager->flush();
 
-            // dump($category->getTitle());
+            dump($category->getTitle());
             $categoryTitle = $category->getTitle();
 
-            $this->addFlash('success', "La catégorie <strong class='text-white'>$categoryTitle</strong> a été modifier");
+            $this->addFlash('success', "La catégorie <strong class='text-white'>$categoryTitle</strong> a été modifiée.");
 
             return $this->redirectToRoute('app_admin_category');
         }
@@ -191,17 +205,34 @@ final class AdminController extends AbstractController
     }
 
     #[Route('/admin/category/remove/{id}', name: 'app_admin_category_remove')]
-    public function adminCategoryRemove($id, EntityManagerInterface $entityManager, CategoryRepository $repoCategory): response
+    public function adminCategoryRemove($id, EntityManagerInterface $entityManager, CategoryRepository $repoCategory)
     {
         $category = $repoCategory->find($id);
-        dump($category);
+        // dump($category->getProducts()->isEmpty());
 
-        // DELETE FROM category WHERE id = $id
-        $entityManager->remove($category);
-        $entityManager->flush();
+        if ($category->getProducts()->isEmpty()) {
+            // DELETE FROM category WHERE id = $id
+            $entityManager->remove($category);
+            $entityManager->flush();
 
-        $this->addFlash('success', "La catégorie a été supprimée.");
+            $this->addFlash('success', "La catégorie a été supprimée.");
+        } else {
+            $this->addFlash('danger', "Impossible de supprimer la catégorie, des articles y sont associés.");
+        }
 
         return $this->redirectToRoute('app_admin_category');
+    }
+
+
+    #[Route('/admin/orders', name: 'app_admin_orders')]
+    public function adminOrders(): Response
+    {
+        return $this->render('admin/orders.html.twig', []);
+    }
+
+    #[Route('/admin/users', name: 'app_admin_users')]
+    public function adminUsers(): Response
+    {
+        return $this->render('admin/users.html.twig', []);
     }
 }
