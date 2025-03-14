@@ -45,7 +45,7 @@
 							<td>{{ item.description }}</td>
 							<td>{{ item.createdAt|date('d/m/Y à H:i:s') }}</td>
 							<td>
-								<a href="{{ path('app_admin_category_update', {'id': item.id}) }}" class="btn btn-dark mb-2">
+								<a href="{{ path('app_admin_category_update', {'id': item.id}) }}" class="btn btn-dark">
 									<i class="fa-solid fa-pen-to-square"></i>
 								</a>
 								<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#category-{{ item.id }}">

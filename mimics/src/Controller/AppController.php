@@ -24,8 +24,11 @@ final class AppController extends AbstractController
         $dbProduct = $repoProduct->getMaxProduct();
         dump($dbProduct);
 
+        $slideProduct = $repoProduct->getSlideProduct();
+
         return $this->render('app/index.html.twig', [
-            'dbProduct' => $dbProduct
+            'dbProduct' => $dbProduct,
+            'slideProduct' => $slideProduct
         ]);
     }
 
@@ -41,9 +44,14 @@ final class AppController extends AbstractController
     }
 
     #[Route('/products', name: 'app_products')]
-    public function appProducts(): Response
+    public function appProducts(ProductRepository $repoProduct): Response
     {
-        return $this->render('app/products.html.twig', []);
+        $dbProduct = $repoProduct->findAll();
+        dump($dbProduct);
+
+        return $this->render('app/products.html.twig', [
+            'dbProduct' => $dbProduct
+        ]);
     }
 
     #[Route('/about', name: 'app_about')]

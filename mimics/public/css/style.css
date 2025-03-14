@@ -783,4 +783,9 @@ a:focus {
 .product__picture{
   width: 100px;
 }
+
+.img_slide_home{
+  max-width: 400px;
+  margin-left: 200px;
+}
 /*# sourceMappingURL=style.css.map */

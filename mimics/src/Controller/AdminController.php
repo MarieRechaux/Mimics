@@ -2,19 +2,23 @@
 
 namespace App\Controller;
 
-use App\Entity\Category;
+use PDO;
 use App\Entity\Product;
-use App\Form\CategoryFormType;
+use App\Entity\Category;
+use App\Form\OrdersFormType;
 use App\Form\ProductFormType;
-use App\Repository\CategoryRepository;
+use App\Form\CategoryFormType;
+use App\Repository\OrdersRepository;
 use App\Repository\ProductRepository;
+use App\Repository\CategoryRepository;
+use Doctrine\Common\Collections\Order;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 final class AdminController extends AbstractController
 {
@@ -225,10 +229,64 @@ final class AdminController extends AbstractController
 
 
     #[Route('/admin/orders', name: 'app_admin_orders')]
-    public function adminOrders(): Response
+    public function adminOrders(OrdersRepository $repoOrders): Response
     {
-        return $this->render('admin/orders.html.twig', []);
+        $dbOrder = $repoOrders->findAll();
+
+        return $this->render('admin/orders.html.twig', [
+            'dbOrder' => $dbOrder
+        ]);
     }
+
+    #[Route('/admin/orders/update/{id}', name: 'app_admin_orders_update')]
+    public function adminOrdersUpdate($id, Order $order, Request $request, EntityManagerInterface $entityManager, OrdersRepository $repoOrder, OrdersFormType $ordersForm): Response
+    {
+        // dump($orders);
+
+        $order = $repoOrder->find($id);
+        // dump($id);
+        // dump($order);
+
+        $form = $this->createForm(OrdersFormType::class,  $order);
+
+        $form->handleRequest($order);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $entityManager->persist($order);
+            $entityManager->flush();
+
+            $this->addFlash('success', "La commande a été modifiée.");
+
+            return $this->redirectToRoute('app_admin_order');
+        }
+
+        $order = $repoOrder->findAll();
+
+        return $this->render('admin/orders.html.twig', [
+            'orderForm' => $ordersForm,
+            'order' => $order
+        ]);
+    }
+
+    // #[Route('/admin/category/remove/{id}', name: 'app_admin_category_remove')]
+    // public function adminCategoryRemove($id, EntityManagerInterface $entityManager, CategoryRepository $repoCategory)
+    // {
+    //     $category = $repoCategory->find($id);
+    //     // dump($category->getProducts()->isEmpty());
+
+    //     if ($category->getProducts()->isEmpty()) {
+    //         // DELETE FROM category WHERE id = $id
+    //         $entityManager->remove($category);
+    //         $entityManager->flush();
+
+    //         $this->addFlash('success', "La catégorie a été supprimée.");
+    //     } else {
+    //         $this->addFlash('danger', "Impossible de supprimer la catégorie, des articles y sont associés.");
+    //     }
+
+    //     return $this->redirectToRoute('app_admin_category');
+    // }
 
     #[Route('/admin/users', name: 'app_admin_users')]
     public function adminUsers(): Response

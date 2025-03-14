@@ -24,11 +24,22 @@ class ProductRepository extends ServiceEntityRepository
        {
            return $this->createQueryBuilder('p') // p = product
                ->orderBy('p.title', 'ASC')
-               ->setMaxResults(6) // LIMIT 6
+               ->setMaxResults(3) // LIMIT 3
                ->getQuery() // STMT + FETCH
                ->getResult()
            ;
        }
+
+              /**
+        * @return Product[] Returns an array of Product objects
+        */
+        public function getSlideProduct(): array
+        {
+            return $this->createQueryBuilder('p') // p = product
+                ->getQuery() // STMT + FETCH
+                ->getResult()
+            ;
+        }
 
     //    /**
     //     * @return Product[] Returns an array of Product objects

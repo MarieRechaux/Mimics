@@ -15,72 +15,52 @@
 							<div class="col-md-6">
 								<div class="detail-box">
 									<h1>
-										Welcome to our shop
+										Bienvenue dans notre boutique
 									</h1>
 									<p>
 										Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste quam velit saepe dolorem deserunt quo quidem ad optio.
 									</p>
-									<a href="">
-										Read More
+									<a href="{{ path('app_about') }}">
+										En savoir plus
 									</a>
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="img-box">
-									<img src="images/slider-img.png" alt="">
+									<img src="images/w2.png" alt="" class="img_slide_home">
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="carousel-item">
-					<div class="container ">
-						<div class="row">
-							<div class="col-md-6">
-								<div class="detail-box">
-									<h1>
-										Welcome to our shop
-									</h1>
-									<p>
-										Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste quam velit saepe dolorem deserunt quo quidem ad optio.
-									</p>
-									<a href="">
-										Read More
-									</a>
+				{% for item in slideProduct %}
+
+					<div class="carousel-item">
+						<div class="container ">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="detail-box">
+										<h1>
+											{{ item.title }}
+										</h1>
+										<p>
+											Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste quam velit saepe dolorem deserunt quo quidem ad optio.
+										</p>
+										<a href="{{ path('app_product_details', {'id': item.id}) }}">
+											En savoir plus
+										</a>
+									</div>
 								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="img-box">
-									<img src="images/slider-img.png" alt="">
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="carousel-item">
-					<div class="container ">
-						<div class="row">
-							<div class="col-md-6">
-								<div class="detail-box">
-									<h1>
-										Welcome to our shop
-									</h1>
-									<p>
-										Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste quam velit saepe dolorem deserunt quo quidem ad optio.
-									</p>
-									<a href="">
-										Read More
-									</a>
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="img-box">
-									<img src="images/slider-img.png" alt="">
+								<div class="col-md-6">
+									<div class="img-box">
+										<img class="img_slide_home" src="{{ asset('uploads/images/' ~ item.picture) }}" alt="{{ item.title }}">
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+
+				{% endfor %}
 			</div>
 			<div class="carousel_btn_box">
 				<a class="carousel-control-prev" href="#customCarousel1" role="button" data-slide="prev">
@@ -144,7 +124,7 @@
 
 		</div>
 		<div class="btn_box">
-			<a href="" class="view_more-link">
+			<a href="{{ path('app_products') }}" class="view_more-link">
 				Voir tous les produits
 			</a>
 		</div>
@@ -170,7 +150,7 @@
 																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																				              Repellat expedita, deserunt eum soluta rem culpa. Aut, necessitatibus cumque. Voluptas consequuntur vitae aperiam animi sint earum, ex unde cupiditate, molestias dolore quos quas possimus eveniet facilis magnam? Vero, dicta.
 					</p>
 					<a href="">
-						Read More
+						En savoir plus
 					</a>
 				</div>
 			</div>
